@@ -154,7 +154,7 @@ class MyWindow(QMainWindow):
                 self.hold = True 
                 quantity = int(self.amount / 현재가)
                 self.SendOrder("매수", "8000", self.account, 1, "229200", quantity, 0, "03", "")
-                self.plain_text_edit.appendPlainText(f"시장가 매수 진행 수량: {self.quantity}")
+                self.plain_text_edit.appendPlainText(f"시장가 매수 진행 수량: {quantity}")
             
             # 로깅
             self.plain_text_edit.appendPlainText(f"시간: {체결시간} 목표가: {self.target} 현재가: {현재가} 보유여부: {self.hold}")
