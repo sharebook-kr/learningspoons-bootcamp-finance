@@ -3,6 +3,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QAxContainer import *
 from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import datetime
 
 
@@ -59,9 +60,19 @@ class MyWindow(QMainWindow):
 
     def _handler_tr_data(self, screen_no, rqname, trcode, record, next):
         if rqname == "KODEX일봉데이터":
+            now = datetime.datetime.now()
+            today = now.strftime("%Y%m%d")
             일자 = self.GetCommData(trcode, rqname, 0, "일자")
-            고가 = self.GetCommData(trcode, rqname, 0, "고가")
-            저가 = self.GetCommData(trcode, rqname, 0, "저가")
+
+            # 장시작 후 TR 요청하는 경우 0번째 row에 당일 일봉 데이터가 존재함
+            if 일자 != today:
+                고가 = self.GetCommData(trcode, rqname, 0, "고가")
+                저가 = self.GetCommData(trcode, rqname, 0, "저가")
+            else:
+                일자 = self.GetCommData(trcode, rqname, 1, "일자")
+                고가 = self.GetCommData(trcode, rqname, 1, "고가")
+                저가 = self.GetCommData(trcode, rqname, 1, "저가")
+
             self.range = int(고가) - int(저가)
             info = f"일자: {일자} 고가: {고가} 저가: {저가}"
             self.plain_text_edit.appendPlainText(info)
@@ -129,6 +140,8 @@ class MyWindow(QMainWindow):
                     self.previous_day_hold = False
                     # 매도 (시장가)
                     self.SendOrder("매도", "8001", self.account, 2, "229200", self.previous_day_quantity, 0, "03", "")
+            elif 장운영구분 == '4':
+                QCoreApplication.instance().quit()
 
         elif real_type == "주식체결": 
             # 현재가 
@@ -164,6 +177,7 @@ class MyWindow(QMainWindow):
             예수금 = self.GetChejanData('951')
             예수금 = int(예수금)
             self.amount = int(예수금 * 0.2)
+            self.plain_text_edit.appendPlainText(f"투자금액 업데이트 됨: {self.amount}")
 
     def subscribe_stock_conclusion(self, screen_no):
         self.SetRealReg(screen_no, "229200", "20", 0)
