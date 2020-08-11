@@ -74,14 +74,14 @@ class MyWindow(QMainWindow):
                 저가 = self.GetCommData(trcode, rqname, 1, "저가")
 
             self.range = int(고가) - int(저가)
-            info = f"일자: {일자} 고가: {고가} 저가: {저가}"
+            info = f"일자: {일자} 고가: {고가} 저가: {저가} 전일변동: {self.range}"
             self.plain_text_edit.appendPlainText(info)
 
         elif rqname == "예수금조회":
             주문가능금액 = self.GetCommData(trcode, rqname, 0, "주문가능금액")
             주문가능금액 = int(주문가능금액)
             self.amount = int(주문가능금액 * 0.2)
-            self.plain_text_edit.appendPlainText(f"투자금액: {self.amount}")
+            self.plain_text_edit.appendPlainText(f"주문가능금액: {주문가능금액} 투자금액: {self.amount}")
 
         elif rqname == "계좌평가현황":
             rows = self.GetRepeatCnt(trcode, rqname)
@@ -142,6 +142,7 @@ class MyWindow(QMainWindow):
                     self.SendOrder("매도", "8001", self.account, 2, "229200", self.previous_day_quantity, 0, "03", "")
             elif 장운영구분 == '4':
                 QCoreApplication.instance().quit()
+                print("메인 윈도우 종료")
 
         elif real_type == "주식체결": 
             # 현재가 
