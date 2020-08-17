@@ -46,7 +46,7 @@ class MyWindow(QMainWindow):
             self.account = accounts.split(';')[0]
             print(self.account)
 
-            # TR 요청 
+            # TR 요청 (1초당 5회)
             self.request_opt10081()
             self.request_opw00001()
             self.request_opw00004()

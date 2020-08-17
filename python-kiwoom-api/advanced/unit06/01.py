@@ -46,6 +46,7 @@ class MyWindow(QMainWindow):
             info = f"일자: {일자} 고가: {고가} 저가: {저가}"
             self.plain_text_edit.appendPlainText(info)
 
+    # TR 요청 (OPT10081)
     def request_opt10081(self):
         now = datetime.datetime.now()
         today = now.strftime("%Y%m%d")
@@ -71,7 +72,7 @@ class MyWindow(QMainWindow):
         if real_type == "주식체결":
             시가 = self.GetCommRealData(code, 16)
             시가 = abs(int(시가))          # +100, -100
-            self.target = int(시가 + (self.range) * 0.5)      
+            self.target = int(시가 + self.range * 0.5)      
 
     def subscribe_stock_conclusion(self, screen_no):
         self.SetRealReg(screen_no, "229200", "20", 0)

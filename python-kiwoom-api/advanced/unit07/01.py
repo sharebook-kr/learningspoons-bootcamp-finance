@@ -41,7 +41,7 @@ class MyWindow(QMainWindow):
             accounts = self.GetLoginInfo("ACCNO")
             self.account = accounts.split(';')[0]
 
-            # TR 요청 
+            # TR 요청 (1초 5번, ..., 시간당 1000번)
             self.request_opt10081()
             self.request_opw00001()
 
@@ -59,7 +59,7 @@ class MyWindow(QMainWindow):
         elif rqname == "예수금조회":
             주문가능금액 = self.GetCommData(trcode, rqname, 0, "주문가능금액")
             주문가능금액 = int(주문가능금액)
-            self.amount = int(주문가능금액 * 0.2)
+            self.amount = int(주문가능금액 * 0.2)   # 20%
             self.plain_text_edit.appendPlainText(f"투자금액: {self.amount}")
 
     def request_opt10081(self):
@@ -70,6 +70,7 @@ class MyWindow(QMainWindow):
         self.SetInputValue("수정주가구분", 1)
         self.CommRqData("KODEX일봉데이터", "opt10081", 0, "9000")
 
+    # 예수금 조회 TR 요청메소드 
     def request_opw00001(self):
         self.SetInputValue("계좌번호", self.account)
         self.SetInputValue("비밀번호", "")
