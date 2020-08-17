@@ -32,10 +32,28 @@ class MyWindow(QMainWindow):
         self.ocx.OnReceiveTrData.connect(self._handler_tr_data)
         self.ocx.OnReceiveRealData.connect(self._handler_real_data)
         self.ocx.OnReceiveChejanData.connect(self._handler_chejan_data)
-        self.CommConnect()
+
+        self.login_event_loop = QEventLoop()
+        self.CommConnect()          # 로그인이 될 때까지 대기
+        self.run()
 
     def CommConnect(self):
         self.ocx.dynamicCall("CommConnect()")
+        self.login_event_loop.exec()
+
+    def run(self):
+        accounts = self.GetLoginInfo("ACCNO")
+        self.account = accounts.split(';')[0]
+        print(self.account)
+
+        # TR 요청 
+        self.request_opt10081()
+        self.request_opw00001()
+        self.request_opw00004()
+
+        # 주식체결 (실시간)
+        self.subscribe_market_time('1')
+        self.subscribe_stock_conclusion('2')
 
     def GetLoginInfo(self, tag):
         data = self.ocx.dynamicCall("GetLoginInfo(QString)", tag)
@@ -44,19 +62,7 @@ class MyWindow(QMainWindow):
     def _handler_login(self, err_code):
         if err_code == 0:
             self.plain_text_edit.appendPlainText("로그인 완료")
-
-            accounts = self.GetLoginInfo("ACCNO")
-            self.account = accounts.split(';')[0]
-            print(self.account)
-
-            # TR 요청 
-            self.request_opt10081()
-            self.request_opw00001()
-            self.request_opw00004()
-
-            # 주식체결 (실시간)
-            self.subscribe_market_time('1')
-            self.subscribe_stock_conclusion('2')
+            self.login_event_loop.exit()
 
     def _handler_tr_data(self, screen_no, rqname, trcode, record, next):
         if rqname == "KODEX일봉데이터":
@@ -148,7 +154,6 @@ class MyWindow(QMainWindow):
             # 현재가 
             현재가 = self.GetCommRealData(code, 10)
             현재가 = abs(int(현재가))          # +100, -100
-
             체결시간 = self.GetCommRealData(code, 20)
 
             # 목표가 계산
@@ -156,7 +161,7 @@ class MyWindow(QMainWindow):
             if self.range is not None and self.target is None:
                 시가 = self.GetCommRealData(code, 16)
                 시가 = abs(int(시가))          # +100, -100
-                self.target = int(시가 + (self.range) * 0.5)      
+                self.target = int(시가 + (self.range * 0.5))      
                 self.plain_text_edit.appendPlainText(f"목표가 계산됨: {self.target}")
 
             # 매수시도
