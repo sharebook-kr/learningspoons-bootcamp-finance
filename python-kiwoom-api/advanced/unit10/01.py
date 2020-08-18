@@ -62,7 +62,7 @@ class MyWindow(QMainWindow):
     def _handler_login(self, err_code):
         if err_code == 0:
             self.plain_text_edit.appendPlainText("로그인 완료")
-            self.login_event_loop.exit()
+        self.login_event_loop.exit()
 
     def _handler_tr_data(self, screen_no, rqname, trcode, record, next):
         if rqname == "KODEX일봉데이터":

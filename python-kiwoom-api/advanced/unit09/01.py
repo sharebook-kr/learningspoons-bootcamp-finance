@@ -144,6 +144,8 @@ class MyWindow(QMainWindow):
                 self.SendOrder("매수", "8000", self.account, 1, "229200", quantity, 0, "03", "")
 
     def _handler_chejan_data(self, gubun, item_cnt, fid_list):
+        # 'gubun': '0' (체결통보)
+        # 'gubun': '1' (잔고통보)
         if 'gubun' == '1':      # 잔고통보
             예수금 = self.GetChejanData('951')
             예수금 = int(예수금)
