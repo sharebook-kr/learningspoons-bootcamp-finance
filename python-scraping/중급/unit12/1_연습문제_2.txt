@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS 회사 (종목명 text, 홈페이지 text, 주요주주 TEXT, aid integer);
+INSERT INTO 회사 VALUES ('삼성전자', 'http://www.sec.co.kr', '이건희', 0);
+INSERT INTO 회사 VALUES ('LG전자', 'http://www.lge.co.kr', '조성진', 0);
+INSERT INTO 회사 VALUES ('SK', 'http://www.sk.co.kr', '최태원', 1);
+INSERT INTO 회사 VALUES ('현대차', 'http://www.hyundai.com', '정몽구', 2);
+INSERT INTO 회사 VALUES ('Naver', 'http://www.naver.com', '국민연금공단', 0);

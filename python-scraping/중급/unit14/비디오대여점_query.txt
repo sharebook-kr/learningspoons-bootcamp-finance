@@ -1,0 +1,17 @@
+create table 대여목록 (도서명 text, 대여자 integer);
+insert into 대여목록 values ("드래곤볼", 0);
+insert into 대여목록 values ("금융의 역사", 1);
+insert into 대여목록 values ("강치", 1);
+insert into 대여목록 values ("아리랑", 3);
+
+create table 회원정보 (번호 integer, 이름 text);
+insert into 회원정보 values (0, "유종훈");
+insert into 회원정보 values (1, "조현호");
+insert into 회원정보 values (2, "조아름");
+
+create table 도서정보 (도서명 text, 출판사 text);
+insert into 도서정보 values ("드래곤볼", "서울문화사");
+insert into 도서정보 values ("금융의 역사", "지식의날개");
+insert into 도서정보 values ("강치", "마시멜로");
+insert into 도서정보 values ("아리랑", "해냄");
+insert into 도서정보 values ("삼국지", "휴먼큐브");
