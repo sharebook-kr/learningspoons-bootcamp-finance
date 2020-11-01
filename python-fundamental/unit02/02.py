@@ -1,4 +1,4 @@
-# 자본총계(비지배주주지분)
+# 자본총계(지배주주지분)
 import requests
 from bs4 import BeautifulSoup
 
