@@ -1,17 +1,17 @@
 import sys 
 from PyQt5.QtWidgets import *
-import pyqtgraph as pg 
+from PyQt5.QtCore import *
 
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        w = pg.PlotWidget(title="Basic Plot")
-        x = [1, 2, 3, 4]
-        y = [1, 2, 3, 4]
-        w.plot(x, y)
-        self.setCentralWidget(w)
+        QTimer.singleShot(5000, self.timeout)
+
+    def timeout(self):
+        msg = "프로그램 실행 후 5초 경과"
+        self.statusBar().showMessage(msg)
 
 
 if __name__ == "__main__":

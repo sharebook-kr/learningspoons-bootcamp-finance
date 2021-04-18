@@ -1,17 +1,17 @@
 import sys 
 from PyQt5.QtWidgets import *
-import pyqtgraph as pg 
-
+from PyQt5.QtCore import *
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        w = pg.PlotWidget(title="Basic Plot")
-        x = [1, 2, 3, 4]
-        y = [1, 2, 3, 4]
-        w.plot(x, y)
-        self.setCentralWidget(w)
+        timer = QTimer(self)
+        timer.start(1000)           # 1 sec
+        timer.timeout.connect(self.display_price)
+
+    def display_price(self):
+        print("hello") 
 
 
 if __name__ == "__main__":
