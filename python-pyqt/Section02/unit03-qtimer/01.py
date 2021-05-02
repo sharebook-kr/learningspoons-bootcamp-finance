@@ -1,6 +1,6 @@
 import sys 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QMainWindow, QApplication 
+from PyQt5.QtCore import QTimer
 
 class MyWindow(QMainWindow):
     def __init__(self):
