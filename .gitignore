@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 #.vscode/launch.json
 .vscode/settings.json
+
+
+python-binance/api.txt
