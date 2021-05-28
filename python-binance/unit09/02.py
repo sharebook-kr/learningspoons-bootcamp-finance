@@ -16,5 +16,5 @@ binance = ccxt.binance(config={
 })
 
 balance = binance.fetch_balance()
-pprint.pprint(balance['total'])
 pprint.pprint(balance)
+print(balance['total']['USDT'])

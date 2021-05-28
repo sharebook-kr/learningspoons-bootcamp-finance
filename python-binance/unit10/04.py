@@ -17,7 +17,7 @@ binance = ccxt.binance(config={
 
 order = binance.create_market_buy_order(
     symbol="BTC/USDT",
-    amount=0.001
+    amount=0.001, 
 )
 
 pprint.pprint(order)

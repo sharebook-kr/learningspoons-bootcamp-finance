@@ -15,10 +15,9 @@ binance = ccxt.binance(config={
     }
 })
 
-order = binance.create_limit_sell_order(
+order = binance.create_market_sell_order(
     symbol="BTC/USDT",
-    amount=0.001, 
-    price = 34000 
+    amount=0.001
 )
 
 pprint.pprint(order)
