@@ -1,5 +1,4 @@
 import ccxt 
-import pprint
 import time
 
 with open("../api.txt") as f:

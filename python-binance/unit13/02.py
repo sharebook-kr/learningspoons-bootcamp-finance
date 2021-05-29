@@ -1,4 +1,3 @@
-# 목표가 계산 함수로 만들기 
 import ccxt 
 import pprint
 import time

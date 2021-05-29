@@ -1,5 +1,4 @@
 import ccxt 
-import pprint
 import time
 import datetime
 import pandas as pd
