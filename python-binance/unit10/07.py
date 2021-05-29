@@ -1,5 +1,7 @@
+# 대기 주문 조회 
 import ccxt 
 import pprint
+
 
 with open("../api.txt") as f:
     lines = f.readlines()
@@ -15,5 +17,8 @@ binance = ccxt.binance(config={
     }
 })
 
-btc = binance.fetch_ticker("BTC/USDT")
-pprint.pprint(btc)
+open_orders = binance.fetch_open_orders(
+    symbol="BTC/USDT"
+)
+pprint.pprint(open_orders)
+

@@ -1,5 +1,7 @@
+# 보유 포지션 조회
 import ccxt 
 import pprint
+
 
 with open("../api.txt") as f:
     lines = f.readlines()
@@ -15,5 +17,10 @@ binance = ccxt.binance(config={
     }
 })
 
-btc = binance.fetch_ticker("BTC/USDT")
-pprint.pprint(btc)
+balance = binance.fetch_balance()
+positions = balance['info']['positions']
+
+for position in positions:
+    if position["symbol"] == "BTCUSDT":
+        pprint.pprint(position)
+
