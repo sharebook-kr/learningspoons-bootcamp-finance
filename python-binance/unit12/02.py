@@ -1,7 +1,7 @@
 import ccxt 
 import pprint
 import time
-import pandas as pd
+import datetime
 
 with open("../api.txt") as f:
     lines = f.readlines()
@@ -17,13 +17,12 @@ binance = ccxt.binance(config={
     }
 })
 
-btc = binance.fetch_ohlcv(
-    symbol="BTC/USDT", 
-    timeframe='1d', 
-    since=None, 
-    limit=10)
+symbol = "BTC/USDT"
 
-df = pd.DataFrame(btc, columns=['datetime', 'open', 'high', 'low', 'close', 'volume'])
-df['datetime'] = pd.to_datetime(df['datetime'], unit='ms')
-df.set_index('datetime', inplace=True)
-print(df)
+while True: 
+    btc = binance.fetch_ticker(symbol)
+    now = datetime.datetime.now()
+    print(now, btc['last'])
+    time.sleep(1)
+
+    

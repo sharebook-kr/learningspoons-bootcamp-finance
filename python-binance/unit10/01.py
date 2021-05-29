@@ -15,11 +15,6 @@ binance = ccxt.binance(config={
     }
 })
 
-order = binance.create_market_buy_order(
-    symbol="BTC/USDT",
-    amount=0.001
-)
-
-pprint.pprint(order)
-
-
+markets = binance.load_markets()
+for m in markets:
+    print(m)

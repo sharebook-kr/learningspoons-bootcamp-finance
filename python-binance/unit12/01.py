@@ -1,5 +1,6 @@
 import ccxt 
 import pprint
+import time
 
 with open("../api.txt") as f:
     lines = f.readlines()
@@ -15,6 +16,11 @@ binance = ccxt.binance(config={
     }
 })
 
-markets = binance.load_markets()
-for m in markets:
-    print(m)
+symbol = "BTC/USDT"
+
+while True: 
+    btc = binance.fetch_ticker(symbol)
+    print(btc['last'])
+    time.sleep(1)
+
+    

@@ -15,11 +15,5 @@ binance = ccxt.binance(config={
     }
 })
 
-order = binance.create_market_sell_order(
-    symbol="BTC/USDT",
-    amount=0.001, 
-)
-
-pprint.pprint(order)
-
-
+btc = binance.fetch_ticker("BTC/USDT")
+pprint.pprint(btc)

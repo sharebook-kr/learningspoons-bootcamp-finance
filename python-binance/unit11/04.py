@@ -1,5 +1,5 @@
-# 선물 호가(오더북, OrderBook) 조회
 import ccxt 
+import pprint
 
 with open("../api.txt") as f:
     lines = f.readlines()
@@ -15,8 +15,11 @@ binance = ccxt.binance(config={
     }
 })
 
-orderbook = binance.fetch_order_book("BTC/USDT")
-asks = orderbook['asks']        # 매도호가 500개
-bids = orderbook['bids']        # 매수호가 500개
-print(asks[0])
-print(bids[0])
+order = binance.create_market_buy_order(
+    symbol="BTC/USDT",
+    amount=0.001, 
+)
+
+pprint.pprint(order)
+
+
