@@ -1,0 +1,2 @@
+from PyQt5.Qt import PYQT_VERSION_STR
+print(PYQT_VERSION_STR)
