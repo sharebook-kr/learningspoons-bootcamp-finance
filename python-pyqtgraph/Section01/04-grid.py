@@ -1,16 +1,18 @@
 import sys 
 from PyQt5.QtWidgets import *
 import pyqtgraph as pg 
-import numpy as np
 
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        w = pg.PlotWidget(title="Basic Plot w/ symbol") 
-        w.showGrid(x=True, y=True) 
-        w.plot([1, 2, 3, 4], [1, 2, 3, 4], symbol='o')
+        w = pg.PlotWidget(title="Grid") 
+        x = [1, 2, 3, 4]
+        y = [1, 2, 3, 4]
+        w.plot(x=x, y=y, symbol='o')
+        w.setBackground('w')
+        w.showGrid(x=False, y=True)
         self.setCentralWidget(w)
 
 

@@ -7,18 +7,22 @@ class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        w= pg.PlotWidget()
+        # layout
+        w = pg.PlotWidget()
         self.setCentralWidget(w)
 
+        # data
         x = [1, 2, 3, 4]
         y = [1, 4, 9, 16]
 
-        # Style
+        # style
         w.setBackground('w')
         w.setTitle("Title")
         w.setLabel("left", "y-axis")
         w.setLabel("bottom", "x-axis")
         w.showGrid(x=True, y=True)
+
+        # plot
         w.plot(x, y)
 
 
