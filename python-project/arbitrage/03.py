@@ -2,7 +2,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import pyupbit
-import pybithumb
+import pykorbit
 import sys
 import pprint
 import asyncio
@@ -12,43 +12,13 @@ import json
 import multiprocessing as mp
 
 
-async def korbit_ws_client(q):
-    uri = "wss://ws.korbit.co.kr/v1/user/push"
-
-    async with websockets.connect(uri) as websocket:
-        now = datetime.datetime.now()
-        timestamp = int(now.timestamp() * 1000)
-
-        subscribe_fmt = {
-            "accessToken": None, 
-            "timestamp": timestamp, 
-            "event": "korbit:subscribe",
-            "data": {
-                "channels": ["orderbook:xrp_krw"]
-            }
-        }
-        subscribe_data = json.dumps(subscribe_fmt)
-        await websocket.send(subscribe_data)
-
-        while True:
-            rdata = await websocket.recv()
-            data = json.loads(rdata)
-            q.put(data)
-
-def korbit(q):
-    asyncio.run(korbit_ws_client(q))
-
-
 class KorbitWS(QThread):
     poped = pyqtSignal(dict)
 
-    def __init__(self, q):
-        super().__init__()
-        self.q = q 
-
     def run(self):
+        wm = pykorbit.WebSocketManager(['orderbook:xrp_krw'])
         while True:
-            data = self.q.get() 
+            data = wm.get()
             self.poped.emit(data)
 
 
@@ -63,9 +33,8 @@ class UpbitWS(QThread):
 
 
 class MyWindow(QWidget):
-    def __init__(self, q):
+    def __init__(self):
         super().__init__()
-        self.q = q
         self.setGeometry(300, 300, 650, 300)
         self.setWindowTitle("Coin Arbitrage v0.1")
 
@@ -81,7 +50,7 @@ class MyWindow(QWidget):
         self.wsc_upbit.poped.connect(self.pop_upbit)
         self.wsc_upbit.start()
 
-        self.wsc_korbit = KorbitWS(self.q)
+        self.wsc_korbit = KorbitWS()
         self.wsc_korbit.poped.connect(self.pop_korbit)
         self.wsc_korbit.start()
 
@@ -94,9 +63,9 @@ class MyWindow(QWidget):
         bid_size  = orderbook["bid_size"]
         
         self.table.setItem(0, 0, QTableWidgetItem("Upibt"))
-        self.table.setItem(0, 1, QTableWidgetItem(str(ask_price)))
+        self.table.setItem(0, 1, QTableWidgetItem(str(int(ask_price))))
         self.table.setItem(0, 2, QTableWidgetItem(str(ask_size)))
-        self.table.setItem(0, 3, QTableWidgetItem(str(bid_price)))
+        self.table.setItem(0, 3, QTableWidgetItem(str(int(bid_price))))
         self.table.setItem(0, 4, QTableWidgetItem(str(bid_size)))
 
     @pyqtSlot(dict)
@@ -127,11 +96,7 @@ class MyWindow(QWidget):
 
 
 if __name__ == "__main__":
-    q = mp.Queue()
-    p = mp.Process(name="Korbit", target=korbit, args=(q,), daemon=True)
-    p.start()
-
     app = QApplication(sys.argv)
-    window = MyWindow(q)
+    window = MyWindow()
     window.show()
     app.exec_()
