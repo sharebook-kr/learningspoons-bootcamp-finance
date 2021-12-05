@@ -1,0 +1,28 @@
+import sys 
+from PyQt5.QtWidgets import *
+from PyQt5.QAxContainer import *
+import pythoncom
+import time
+
+
+class MyWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.login_status = False
+        self.ocx = QAxWidget("KHOPENAPI.KHOpenAPICtrl.1")
+        self.ocx.OnEventConnect.connect(self.slot_login)
+
+    def login(self):
+        self.ocx.dynamicCall("CommConnect()")
+        while not self.login_status: 
+            pythoncom.PumpWaitingMessages()
+            time.sleep(0.001)
+
+    def slot_login(self, err_code):
+        self.login_status = True
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MyWindow()
+    window.login()
