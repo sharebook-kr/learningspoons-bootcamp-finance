@@ -24,9 +24,20 @@ class MyWindow(QWidget):
 
     def slot_login(self, err_code):
         self.login_status = True
+        print("login is complete")
 
 
 if __name__ == "__main__":
     sub_proc = mp.Process(target=MyWindow, name="Sub Process")
     sub_proc.start()
 
+    for i in range(60):
+        print("sleep ", 60-i)
+        time.sleep(1)
+
+    if sub_proc.is_alive():
+        sub_proc.kill()
+
+    while True:
+        print("main process is running")
+        time.sleep(1)
