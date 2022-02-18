@@ -33,6 +33,7 @@ while True:
 
         # 신규상장 암호화폐 시장가 매수
         upbit.buy_market_order(ticker, krw_balance)
+        time.sleep(DELAY)
 
         coin_balance = upbit.get_balance(ticker)
         high_price = pyupbit.get_current_price(ticker)

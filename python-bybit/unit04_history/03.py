@@ -1,6 +1,10 @@
 from pybit import HTTP
-import pprint
 import pandas as pd
+import time 
+import datetime
+
+dt = datetime.datetime(2022, 1, 1, 0, 0, 0)
+from_time = time.mktime(dt.timetuple())
 
 session = HTTP(
     endpoint="https://api.bybit.com", 
@@ -11,7 +15,7 @@ resp = session.query_kline(
     symbol="BTCUSDT",
     interval="D",
     limit=200,
-    from_time=1581231260
+    from_time=from_time
 )
 
 result = resp['result']

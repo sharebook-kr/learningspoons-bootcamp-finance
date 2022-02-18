@@ -9,7 +9,7 @@ session = HTTP(
 
 resp = session.query_kline(
     symbol="BTCUSDT",
-    interval="D",
+    interval=5,
     limit=200,
     from_time=1581231260
 )

@@ -1,6 +1,6 @@
 import finplot as fplt
-import yfinance
+import FinanceDataReader as fdr
 
-df = yfinance.download('AAPL')
+df = fdr.DataReader(symbol="KS11", start="2021")
 fplt.candlestick_ochl(df[['Open', 'Close', 'High', 'Low']])
 fplt.show()
