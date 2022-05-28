@@ -1,17 +1,16 @@
-import sys 
+import sys
 from PyQt5.QtWidgets import *
-import pyqtgraph as pg 
+import pyqtgraph as pg
 
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        w = pg.PlotWidget(title="Basic Plot")
+        w = pg.PlotWidget()
         x = [1, 2, 3, 4]
         y = [1, 2, 3, 4]
         w.plot(x, y)
-        w.setBackground('w')
         self.setCentralWidget(w)
 
 

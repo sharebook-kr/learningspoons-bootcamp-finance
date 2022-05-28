@@ -7,15 +7,14 @@ class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # layout
         w = pg.PlotWidget()
-        self.setCentralWidget(w)
+        x1 = [1, 2, 3, 4]
+        y1 = [1, 2, 3, 4]
 
-        # data
-        x = [1, 2, 3, 4]
-        y = [1, 4, 9, 16]
+        x2 = [1, 2, 3, 4]
+        y2 = [1, 4, 9, 16]
 
-        # Style
+        # style
         w.setBackground('w')
         w.setTitle("Title")
         w.setLabel("left", "y-axis")
@@ -23,8 +22,9 @@ class MyWindow(QMainWindow):
         w.showGrid(x=True, y=True)
         w.addLegend()
 
-        # plot
-        w.plot(x, y, pen=(0, 0, 255), name="default plot")
+        w.plot(x1, y1, pen=pg.mkPen(width=4, color='r'), name="plot-1")
+        w.plot(x2, y2, pen=pg.mkPen(width=4, color='b'), name="plot-2")
+        self.setCentralWidget(w)
 
 
 if __name__ == "__main__":

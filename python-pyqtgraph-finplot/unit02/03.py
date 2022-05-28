@@ -7,13 +7,9 @@ class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # layout
         w = pg.PlotWidget()
-        self.setCentralWidget(w)
-
-        # data
         x = [1, 2, 3, 4]
-        y = [1, 4, 9, 16]
+        y = [1, 2, 3, 4]
 
         # style
         w.setBackground('w')
@@ -21,10 +17,10 @@ class MyWindow(QMainWindow):
         w.setLabel("left", "y-axis")
         w.setLabel("bottom", "x-axis")
         w.showGrid(x=True, y=True)
+        w.addLegend()
 
-        # plot
-        #w.plot(x, y, pen=(0, 0, 255))
-        w.plot(x, y, pen=pg.mkPen('r'))
+        w.plot(x, y, pen=pg.mkPen(width=4, color='r'), name="plot-1")
+        self.setCentralWidget(w)
 
 
 if __name__ == "__main__":

@@ -7,8 +7,11 @@ class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-    def paintEvent(self, event):
-        print("paintEvent", event)
+        w = pg.PlotWidget(background='w')
+        x = [1, 2, 3, 4]
+        y = [1, 2, 3, 4]
+        w.plot(x, y)
+        self.setCentralWidget(w)
 
 
 if __name__ == "__main__":
