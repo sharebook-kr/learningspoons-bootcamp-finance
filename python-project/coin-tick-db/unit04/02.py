@@ -3,8 +3,7 @@ import pyupbit
 import datetime
 import pandas as pd
 import sqlite3
-
-DATA_COUNT_MAX = 10000
+import time
 
 def save_data(con, ticker_data):
     columns = ['datetime', 'code', 'open', 'high', 'low', 'close',
@@ -18,7 +17,10 @@ def save_data(con, ticker_data):
 
 
 if __name__ == "__main__":
+    # tickers
     krw_tickers = pyupbit.get_tickers(fiat="KRW")
+
+    # queue and sub process
     queue = mp.Queue()
     proc = mp.Process(
         target=pyupbit.WebSocketClient,
@@ -27,47 +29,54 @@ if __name__ == "__main__":
     )
     proc.start()
 
+    # main process
     now = datetime.datetime.now()
     delta = datetime.timedelta(hours=9)
     now = now - delta
-    date = now.strftime("%Y-%m-%d")
-    ticker_data = {k:[] for k in krw_tickers}
-    data_count = 0
-    con = sqlite3.connect(f"./{date}-coin.db")
-    prev_date = date
+    date = now.strftime("%Y-%m-%d")         # "2022-07-05"
+    ticker_data = {date: {k:[] for k in krw_tickers} }
+    cons = {date: sqlite3.connect(f"./{date}-coin.db")}
 
     while True:
         data = queue.get()
-        data_count += 1
 
-        code = data['code']
-        open = data['opening_price']
-        high = data['high_price']
-        low  = data['low_price']
-        close = data['trade_price']
-        ts = data['trade_timestamp']
-        acc_volume = data['acc_trade_volume']
-        acc_price = data['acc_trade_price']
-        acc_ask_volume = data['acc_ask_volume']
-        acc_bid_volume = data['acc_bid_volume']
-        change_rate = data['signed_change_rate']
+        try:
+            code = data['code']
+            open = data['opening_price']
+            high = data['high_price']
+            low  = data['low_price']
+            close = data['trade_price']
+            ts = data['trade_timestamp']
+            acc_volume = data['acc_trade_volume']
+            acc_price = data['acc_trade_price']
+            acc_ask_volume = data['acc_ask_volume']
+            acc_bid_volume = data['acc_bid_volume']
+            change_rate = data['signed_change_rate']
+        except Exception as e:
+            print(e)
+            continue
+
+        # save data
         dt = datetime.datetime.fromtimestamp(ts/1000)
         dt_utc = dt - delta
-        curr_date = dt_utc.strftime("%Y-%m-%d")
-
-        if (prev_date != curr_date) or (data_count == DATA_COUNT_MAX):
-            save_data(con, ticker_data)
-
-            # 날짜 변경 시 새로운 db 열기
-            if prev_date != curr_date:
-                con = sqlite3.connect(f"./{curr_date}-coin.db")
-                krw_tickers = pyupbit.get_tickers(fiat="KRW")       # ticker update
-
-            ticker_data = {k:[] for k in krw_tickers}           # data reset
-            data_count = 0
-
+        date_utc = dt_utc.strftime("%Y-%m-%d")
         row = (dt, code, open, high, low, close, acc_volume, acc_price, acc_ask_volume, acc_bid_volume, change_rate)
-        ticker_data[code].append(row)
-        prev_date = curr_date
+        ticker_data[date_utc][code].append(row)
 
+        now = datetime.datetime.now()
 
+        # the next day
+        if now.hour == 8 and now.minute == 50 and (0 <= now.second <=2):
+            krw_tickers = pyupbit.get_tickers(fiat="KRW")
+            next_date = now.strftime("%Y-%m-%d")
+            ticker_data[next_date] = {k:[] for k in krw_tickers}
+            cons[next_date] = sqlite3.connect(f"./{next_date}-coin.db")
+            time.sleep(2.5)
+
+        # save the previous day data to the database
+        if now.hour == 9 and now.minute == 10 and (0 <= now.second <=2):
+            prev_date = (now - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+            save_data(cons[prev_date], ticker_data[prev_date])
+            del cons[prev_date]
+            del ticker_data[prev_date]
+            time.sleep(2.5)
