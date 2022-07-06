@@ -30,12 +30,8 @@ if __name__ == "__main__":
     proc.start()
 
     # main process
-    now = datetime.datetime.now()
     delta = datetime.timedelta(hours=9)
-    now = now - delta
-    date = now.strftime("%Y-%m-%d")         # "2022-07-05"
-    ticker_data = {date: {k:[] for k in krw_tickers} }
-    cons = {date: sqlite3.connect(f"./{date}-coin.db")}
+    ticker_data = { }
 
     while True:
         data = queue.get()
@@ -60,23 +56,26 @@ if __name__ == "__main__":
         dt = datetime.datetime.fromtimestamp(ts/1000)
         dt_utc = dt - delta
         date_utc = dt_utc.strftime("%Y-%m-%d")
-        row = (dt, code, open, high, low, close, acc_volume, acc_price, acc_ask_volume, acc_bid_volume, change_rate)
-        ticker_data[date_utc][code].append(row)
+        row = (dt, code, open, high, low, close,
+               acc_volume, acc_price, acc_ask_volume, acc_bid_volume, change_rate)
+
+        try:
+            ticker_data[date_utc][code].append(row)
+        except KeyError:
+            ticker_data[date_utc] = {k:[] for k in krw_tickers}
+            ticker_data[date_utc][code].append(row)
 
         now = datetime.datetime.now()
-
-        # the next day
-        if now.hour == 8 and now.minute == 50 and (0 <= now.second <=2):
-            krw_tickers = pyupbit.get_tickers(fiat="KRW")
-            next_date = now.strftime("%Y-%m-%d")
-            ticker_data[next_date] = {k:[] for k in krw_tickers}
-            cons[next_date] = sqlite3.connect(f"./{next_date}-coin.db")
-            time.sleep(2.5)
+        print(now, dt, code)
 
         # save the previous day data to the database
         if now.hour == 9 and now.minute == 10 and (0 <= now.second <=2):
+            krw_tickers = pyupbit.get_tickers(fiat="KRW")
             prev_date = (now - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-            save_data(cons[prev_date], ticker_data[prev_date])
-            del cons[prev_date]
+
+            con = sqlite3.connect(f"./{prev_date}-coin.db")
+            save_data(con, ticker_data[prev_date])
+            con.close()
+
             del ticker_data[prev_date]
             time.sleep(2.5)
