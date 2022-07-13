@@ -8,7 +8,10 @@ class MyWindow(QMainWindow):
         super().__init__()
 
         label = QLabel()
-        label.setPixmap(QPixmap("logo.png"))
+        pixmap = QPixmap("logo.png")
+        label.setPixmap(pixmap)
+        #print(pixmap.width())
+        #print(pixmap.height())
         #label.setScaledContents(True)
         button = QPushButton("click")
 
