@@ -1,30 +1,47 @@
 import sys
 from PyQt5.QtWidgets import *
 import pyqtgraph as pg
-import numpy as np
+import pyupbit
+from math import ceil, log10
+
+
+class YAxisItem(pg.AxisItem):
+    def __init__(self, orientation='left', **kwargs):
+        super().__init__(orientation, **kwargs)
+
+    def tickStrings(self, values, scale, spacing):
+        if self.logMode:
+            return self.logTickStrings(values, scale, spacing)
+
+        places = max(0, ceil(-log10(spacing*scale)))
+        strings = []
+        for v in values:
+            vs = v * scale
+            vstr = ("%%0.%df" % places) % vs
+            strings.append(vstr)
+        return strings
 
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        w = pg.GraphicsLayoutWidget()
+        w = pg.PlotWidget(axisItems= {
+            'left': YAxisItem(),
+            'bottom': pg.DateAxisItem()
+            }
+        )
         self.setCentralWidget(w)
 
-        p1 = w.addPlot(row=1, col=1, colspan=2)
-        p2 = w.addPlot(row=2, col=1, colspan=2)
-        p31 = w.addPlot(row=3, col=1)
-        p32 = w.addPlot(row=3, col=2)
+        df = pyupbit.get_ohlcv("KRW-BTC", interval='minute1')
+        x = [x.timestamp() for x in df.index]
+        y = df['close']
+        volume = df['volume']
 
-        p1.plot([1, 4, 2, 4, 3, 5])
-        p1.setLabel(axis='bottom', text='x')
-        p1.setLabel(axis='left', text='y')
-        p1.setTitle("plot-1")
-        p1.showGrid(x=True, y=True)
-
-        p2.plot([1, 4, 2, 4, 3, 5])
-        p31.plot([1, 4, 2, 4, 3, 5])
-        p32.plot([1, 4, 2, 4, 3, 5])
+        #w.plot(x=x, y=y, pen=pg.mkPen(color='#2196F3', width=4))
+        bar = pg.BarGraphItem(x=x, height=volume, width=0.3)
+        w.addItem(bar)
+        w.setTitle("KRW-BTC minute1 volume")
 
 
 if __name__ == "__main__":

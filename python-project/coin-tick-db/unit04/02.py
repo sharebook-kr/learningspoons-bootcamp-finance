@@ -5,13 +5,29 @@ import pandas as pd
 import sqlite3
 import time
 import threading
+import logging
+import logging.handlers
+
+
+# logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+file_handler = logging.handlers.TimedRotatingFileHandler(filename="log", when = "H", interval=1)
+file_handler.setFormatter(formatter)
+
+# add handler to logger
+logger.addHandler(stream_handler)
+logger.addHandler(file_handler)
 
 
 def save_data(con, ticker_data):
-    columns = ['datetime', 'code', 'open', 'high', 'low', 'close',
-               'acc_vol', 'acc_price', 'acc_ask_vol', 'acc_bid_vol',
-               'change_rate']
-
+    columns = ['datetime', 'code', 'price', 'volume']
     for k, v in ticker_data.items():
         if len(v) !=0:
             df = pd.DataFrame(data=v, columns=columns)
@@ -27,8 +43,9 @@ class Worker(threading.Thread):
     def run(self):
         while True:
             now = datetime.datetime.now()
+            logger.info("Worker thread true")
 
-            if now.hour == 9 and now.minute == 10 and (0 <= now.second <=2):
+            if now.hour == 9 and now.minute == 30 and (0 <= now.second <=3):
                 with self.lock:
                     yesterday = (now - datetime.timedelta(days=1))
                     date = yesterday.strftime("%Y-%m-%d")
@@ -36,7 +53,7 @@ class Worker(threading.Thread):
                     save_data(con, self.data[date])
                     con.close()
                     del self.data[date]
-                    time.sleep(2.5)
+                    time.sleep(3)
             else:
                 time.sleep(1)
 
@@ -49,7 +66,7 @@ if __name__ == "__main__":
     queue = mp.Queue()
     proc = mp.Process(
         target=pyupbit.WebSocketClient,
-        args=('ticker', krw_tickers, queue),
+        args=('trade', krw_tickers, queue),
         daemon=True
     )
     proc.start()
@@ -68,16 +85,9 @@ if __name__ == "__main__":
 
         try:
             code = data['code']
-            open = data['opening_price']
-            high = data['high_price']
-            low  = data['low_price']
-            close = data['trade_price']
+            price = data['trade_price']
+            volume = data['trade_volume']
             ts = data['trade_timestamp']
-            acc_volume = data['acc_trade_volume']
-            acc_price = data['acc_trade_price']
-            acc_ask_volume = data['acc_ask_volume']
-            acc_bid_volume = data['acc_bid_volume']
-            change_rate = data['signed_change_rate']
         except Exception as e:
             print(e)
             continue
@@ -86,8 +96,7 @@ if __name__ == "__main__":
         dt = datetime.datetime.fromtimestamp(ts/1000)
         dt_utc = dt - delta
         date_utc = dt_utc.strftime("%Y-%m-%d")
-        row = (dt, code, open, high, low, close,
-               acc_volume, acc_price, acc_ask_volume, acc_bid_volume, change_rate)
+        row = (dt, code, price, volume)
 
         # acquire the lock
         with lock:

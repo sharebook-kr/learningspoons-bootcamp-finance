@@ -1,47 +1,31 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
 import pyqtgraph as pg
-import pyupbit
-
-class UpbitWS(QThread):
-    poped = pyqtSignal(dict)
-
-    def run(self):
-        self.wm = pyupbit.WebSocketManager(type="ticker", codes=["KRW-BTC"])
-        while True:
-            data = self.wm.get()
-            self.poped.emit(data)
-
-    def terminate(self) -> None:
-        self.wm.terminate()
+import numpy as np
 
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.w = pg.PlotWidget(axisItems= {'bottom': pg.DateAxisItem()})
-        self.setCentralWidget(self.w)
+        w = pg.GraphicsLayoutWidget()
+        self.setCentralWidget(w)
 
-        # thread
-        self.wsc_upbit = UpbitWS()
-        self.wsc_upbit.poped.connect(self.pop_upbit)
-        self.wsc_upbit.start()
+        p1 = w.addPlot(row=1, col=1, colspan=2)
+        p2 = w.addPlot(row=2, col=1, colspan=2)
+        p31 = w.addPlot(row=3, col=1)
+        p32 = w.addPlot(row=3, col=2)
 
-        self.xdata = []
-        self.ydata = []
+        p1.plot([1, 4, 2, 4, 3, 5])
+        p1.setLabel(axis='bottom', text='x')
+        p1.setLabel(axis='left', text='y')
+        p1.setTitle("plot-1")
+        p1.showGrid(x=True, y=True)
 
-    @pyqtSlot(dict)
-    def pop_upbit(self, data):
-        close_price = data.get('trade_price')
-        time_stamp = data.get('trade_timestamp')
-        self.xdata.append(int(time_stamp/1000))
-        self.ydata.append(close_price)
-        self.w.plot(self.xdata, self.ydata)
+        p2.plot([1, 4, 2, 4, 3, 5])
+        p31.plot([1, 4, 2, 4, 3, 5])
+        p32.plot([1, 4, 2, 4, 3, 5])
 
-    def closeEvent(self, event):
-        self.wsc_upbit.terminate()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
