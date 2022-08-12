@@ -1,20 +1,27 @@
-import finplot as fplt
-import numpy as np
-import pandas as pd
+import pyupbit
+import datetime
+import time
 
+df = pyupbit.get_ohlcv(ticker="KRW-BTC", interval="minute1")
 
-dates = pd.date_range('01:00', '01:00:01.200', freq='1ms')
-prices = pd.Series(np.random.random(len(dates))).rolling(30).mean() + 4
-fplt.plot(dates, prices, width=3)
-line = fplt.add_line((dates[100], 4.4), (dates[1100], 4.6), color='#9900ff', interactive=True)
-## fplt.remove_primitive(line)
-text = fplt.add_text((dates[500], 4.6), "I'm here alright!", color='#bb7700')
-## fplt.remove_primitive(text)
-rect = fplt.add_rect((dates[700], 4.5), (dates[850], 4.4), color='#8c8', interactive=True)
-## fplt.remove_primitive(rect)
+# every sec
+while True:
+    data = pyupbit.get_current_price("KRW-BTC", verbose=True)
+    price = data['trade_price']
+    timestamp = data['trade_timestamp'] / 1000
+    cur_min_timestamp = timestamp - (timestamp % 60)
+    cur_min_dt = datetime.datetime.fromtimestamp(cur_min_timestamp)
 
-def save():
-    fplt.screenshot(open('screenshot.png', 'wb'))
-fplt.timer_callback(save, 0.5, single_shot=True) # wait some until we're rendered
+    print(df.index[-1], cur_min_dt, timestamp % 60)
 
-fplt.show()
+    if cur_min_dt > df.index[-1]:
+        df = pyupbit.get_ohlcv(ticker="KRW-BTC", interval="minute1")
+    else:
+        # update last candle
+        df.iloc[-1]['close'] = price
+        if price > df.iloc[-1]['high']:
+            df.iloc[-1]['high'] = price
+        if price < df.iloc[-1]['low']:
+            df.iloc[-1]['low'] = price
+
+    time.sleep(1)

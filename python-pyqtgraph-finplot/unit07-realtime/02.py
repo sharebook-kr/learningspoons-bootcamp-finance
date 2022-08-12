@@ -34,10 +34,20 @@ class MyWindow(QMainWindow):
 
     @pyqtSlot(dict)
     def pop_upbit(self, data):
+        time_stamp = int(data.get('trade_timestamp') / 1000)
         close_price = data.get('trade_price')
-        time_stamp = data.get('trade_timestamp')
-        self.xdata.append(int(time_stamp/1000))
-        self.ydata.append(close_price)
+
+        if time_stamp not in self.xdata:
+            # append
+            self.xdata.append(time_stamp)
+            self.ydata.append(close_price)
+        else:
+            # update
+            index = self.xdata.index(time_stamp)
+            self.ydata[index] = close_price
+
+        self.w.setXRange(time_stamp-60, time_stamp+1, padding=0)
+        self.w.clear()
         self.w.plot(self.xdata, self.ydata)
 
     def closeEvent(self, event):
