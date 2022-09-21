@@ -110,6 +110,7 @@ class XAxisItem(pg.AxisItem):
         return [(d.total_seconds(), majticks)]
 
     def tickStrings(self, values, scale, spacing):
+        print(values, spacing)
         ret = []
         if not values:
             return []
@@ -158,7 +159,7 @@ class MyWindow(QMainWindow):
         )
         self.setCentralWidget(w)
 
-        df = pyupbit.get_ohlcv("KRW-BTC", interval="day")
+        df = pyupbit.get_ohlcv("KRW-BTC", interval="minute1")
         dt = [i.to_pydatetime() for i in df.index]
         x = [x.timestamp() for x in dt]
         y = df['close']

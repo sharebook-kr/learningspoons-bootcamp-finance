@@ -29,18 +29,19 @@ class MyWindow(QMainWindow):
         w = pg.PlotWidget(axisItems= {
             'left': YAxisItem(),
             'bottom': pg.DateAxisItem()
-            }
+            },
+            background='w'
         )
         self.setCentralWidget(w)
 
         df = pyupbit.get_ohlcv("KRW-BTC", interval='minute1')
-        x = [x.timestamp() for x in df.index]
+        x = [x.to_pydatetime().timestamp() for x in df.index]
         y = df['close']
         y2 = df['close'].rolling(window=9).mean()
 
         w.addLegend()
         w.plot(x=x, y=y, pen=pg.mkPen(color='#2196F3', width=4), name="minute1")
-        w.plot(x=x, y=y2, pen=pg.mkPen(color='g', width=1), name='MA 9')
+        w.plot(x=x, y=y2, pen=pg.mkPen(color='r', width=2), name='MA 9')
 
 
 if __name__ == "__main__":

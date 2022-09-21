@@ -1,4 +1,4 @@
-with open("../account.txt") as f:
+with open("../../binance.key") as f:
     lines = f.readlines()
     api_key = lines[0].strip()
     api_secret = lines[1].strip()

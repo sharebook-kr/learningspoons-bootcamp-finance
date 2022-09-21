@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 import pyqtgraph as pg
 import pyupbit
 
-
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()

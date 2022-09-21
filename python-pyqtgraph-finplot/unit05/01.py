@@ -8,7 +8,7 @@ class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        w = pg.PlotWidget()
+        w = pg.PlotWidget(background='w')
         self.setCentralWidget(w)
 
         x = np.arange(20)

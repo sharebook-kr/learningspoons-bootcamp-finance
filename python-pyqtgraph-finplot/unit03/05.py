@@ -29,19 +29,22 @@ class MyWindow(QMainWindow):
         w = pg.PlotWidget(axisItems= {
             'left': YAxisItem(),
             'bottom': pg.DateAxisItem()
-            }
+            },
+            background='w'
         )
         self.setCentralWidget(w)
 
-        df = pyupbit.get_ohlcv("KRW-BTC", interval='minute1')
-        x = [x.timestamp() for x in df.index]
+        #df = pyupbit.get_ohlcv("KRW-BTC", interval='minute1')
+        df = pyupbit.get_ohlcv("KRW-BTC", interval='day')
+        x = [x.to_pydatetime().timestamp() for x in df.index]
+        #x = [x.timestamp() for x in df.index]
         y = df['close']
         w.plot(x=x, y=y, pen=pg.mkPen(color='#2196F3', width=4))
 
         max_idx = df['close'].argmax()
         min_idx = df['close'].argmin()
-        max_xpos = df.index[max_idx].timestamp()
-        min_xpos = df.index[min_idx].timestamp()
+        max_xpos = df.index[max_idx].to_pydatetime().timestamp()
+        min_xpos = df.index[min_idx].to_pydatetime().timestamp()
 
         max_arrow = pg.ArrowItem(angle=-180, tipAngle=60, headLen=10, pen=None, brush='r')
         max_arrow.setPos(max_xpos, df['close'].iloc[max_idx])

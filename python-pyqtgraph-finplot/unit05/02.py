@@ -29,12 +29,13 @@ class MyWindow(QMainWindow):
         w = pg.PlotWidget(axisItems= {
             'left': YAxisItem(),
             'bottom': pg.DateAxisItem()
-            }
+            },
+            background='w'
         )
         self.setCentralWidget(w)
 
         df = pyupbit.get_ohlcv("KRW-BTC", interval='minute1')
-        x = [x.timestamp() for x in df.index]
+        x = [x.to_pydatetime().timestamp() for x in df.index]
         y = df['close']
         volume = df['volume']
 

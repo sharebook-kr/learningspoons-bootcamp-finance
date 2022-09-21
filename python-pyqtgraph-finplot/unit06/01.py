@@ -15,8 +15,7 @@ class MyWindow(QMainWindow):
         p2 = w.addPlot(row=2, col=1, colspan=2)
         p31 = w.addPlot(row=3, col=1)
         p32 = w.addPlot(row=3, col=2)
-
-        print(type(p1))
+        #print(type(p1))
 
         p1.plot([1, 4, 2, 4, 3, 5])
         p1.setTitle("plot-1")
