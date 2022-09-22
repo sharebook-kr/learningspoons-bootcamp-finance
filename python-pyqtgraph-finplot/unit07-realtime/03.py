@@ -1,4 +1,4 @@
-# redraw every 500 msec
+# plot when signal is emitted
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -38,12 +38,22 @@ class MyWindow(QMainWindow):
         self.time_stamp = int(datetime.now().timestamp())
         self.close_price = 0
 
-        # timer
-        self.timer = QTimer()
-        self.timer.start(500)       # 500 msec
-        self.timer.timeout.connect(self.plot)
+    @pyqtSlot(dict)
+    def pop_upbit(self, data):
+        self.time_stamp = int(data.get('trade_timestamp') / 1000)
+        self.close_price = data.get('trade_price')
+        #print(self.time_stamp, self.close_price)
 
-    def plot(self):
+        if self.time_stamp not in self.xdata:
+            # append
+            self.xdata.append(self.time_stamp)
+            self.ydata.append(self.close_price)
+        else:
+            # update
+            index = self.xdata.index(self.time_stamp)
+            self.ydata[index] = self.close_price
+
+        # clear and plot
         self.w.setXRange(self.time_stamp-60, self.time_stamp+1, padding=0)
         self.w.clear()
         self.w.plot(self.xdata, self.ydata)
@@ -56,20 +66,6 @@ class MyWindow(QMainWindow):
         except ValueError:
             pass
 
-    @pyqtSlot(dict)
-    def pop_upbit(self, data):
-        self.time_stamp = int(data.get('trade_timestamp') / 1000)
-        self.close_price = data.get('trade_price')
-        print(self.time_stamp, self.close_price)
-
-        if self.time_stamp not in self.xdata:
-            # append
-            self.xdata.append(self.time_stamp)
-            self.ydata.append(self.close_price)
-        else:
-            # update
-            index = self.xdata.index(self.time_stamp)
-            self.ydata[index] = self.close_price
 
     def closeEvent(self, event):
         self.wsc_upbit.terminate()
